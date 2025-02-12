@@ -1,6 +1,8 @@
 # InstaUnliker
-Unlike recently liked Instagram posts.
-Quickly scrapped together in response to https://www.reddit.com/r/Adblock/comments/jc447f/nano_adblocker_nano_defender_was_sold_and_should/
+Instagram Unliker tool with some added features:
+    * Added GUI
+    * Added ability to run from executable file for Windows
+    * Added Ability to repeat chunks of unliking with a custome delay between them
 
 ## Instructions
 1. ``pip install -r requirements.txt``
