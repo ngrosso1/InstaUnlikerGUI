@@ -1,18 +1,23 @@
 # InstaUnliker
 Instagram Unliker tool with some added features:
  - Added GUI
- - Added ability to run from executable file for Windows and Linux
+ - Added ability to run from executable file for Windows, MacOS, and Linux
  - Added Ability to repeat chunks of unliking with a custome delay between them
 
 ## Instructions to run script 🐍
 1. Install dependencies
  - ``pip install -r requirements.txt`` 
-  - May need to install tkinter seperatly: ``sudo apt-get install python3-tk``
+  - May need to install tkinter seperatly:
+    - Debian/Ubuntu based: ``sudo apt-get install python3-tk``
+    - MacOS: ``brew install python-tk``
 2. Run script
  - ```python main.py```
 
 ## Instructions to compile for Windows 🪟
-```pyinstaller --onefile --windowed --hidden-import instagrapi.exceptions --hidden-import tkinter --hidden-import colorsys --icon=instaul2.ico main.py```
+```pyinstaller --onefile --windowed --hidden-import instagrapi.exceptions --hidden-import tkinter --hidden-import colorsys --icon=instaul.ico --name=InstagramUnliker main.py```
+
+## Instructions to compile for MacOS 🍎
+```pyinstaller --onefile --windowed --hidden-import instagrapi.exceptions --hidden-import tkinter --hidden-import colorsys --icon=instaul.icns --name=InstagramUnliker main.py```
 
 ## Instructions to compile for Linux (AppImage) 🐧
 1. Install appimagetool
@@ -29,14 +34,7 @@ Instagram Unliker tool with some added features:
   - ```appimagetool --version```
 
 2. Compile binary:
-```
-    pyinstaller --onefile --windowed \
-  --hidden-import instagrapi.exceptions \
-  --hidden-import tkinter \
-  --hidden-import colorsys \
-  --collect-submodules instagrapi \
-  --icon=instaul2.ico main.py
-```
+```pyinstaller --onefile --windowed --hidden-import instagrapi.exceptions --hidden-import tkinter --hidden-import colorsys --collect-submodules instagrapi --icon=instaul.ico --name=InstagramUnliker main.py```
 
 3. Set up AppDir:
  - Create the directories:
