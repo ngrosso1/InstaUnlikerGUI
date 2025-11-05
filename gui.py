@@ -54,27 +54,66 @@ class InstagramUnlikerGUI:
         left_panel.grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(0, 10))
         left_panel.grid_columnconfigure(1, weight=1)
         
-        # Username
+        # Track visibility state for username and password (both start visible in UI)
+        self.fields_visible = True
+        
+        # Get entry background color for icon buttons
+        entry_bg = '#2D2D2D' if self.is_dark else '#FAFAFA'
+        
+        # Username - no icon, just the entry field
         ttk.Label(left_panel, text="Username:", style='Custom.TLabel').grid(row=0, column=0, sticky=tk.W, pady=5)
         self.username_var = tk.StringVar()
-        self.username_entry = ttk.Entry(left_panel, textvariable=self.username_var, style='Custom.TEntry', width=25)
+        self.username_entry = tk.Entry(left_panel, textvariable=self.username_var, 
+                                       bg=entry_bg, fg=self.fg_color, 
+                                       insertbackground=self.fg_color,
+                                       font=('Helvetica', 10),
+                                       relief='flat', bd=1,
+                                       width=25)
         self.username_entry.grid(row=0, column=1, sticky=(tk.W, tk.E), pady=5, padx=5)
         self.username_entry.bind('<Return>', lambda e: self.start_unliking())
         self.username_entry.bind('<Down>', lambda e: self.password_entry.focus())
         
-        # Password
+        # Password - with icon button inside
         ttk.Label(left_panel, text="Password:", style='Custom.TLabel').grid(row=1, column=0, sticky=tk.W, pady=5)
+        password_frame = tk.Frame(left_panel, bg=entry_bg, relief='flat', bd=1)
+        password_frame.grid(row=1, column=1, sticky=(tk.W, tk.E), pady=5, padx=5)
+        password_frame.grid_columnconfigure(0, weight=1)
+        
         self.password_var = tk.StringVar()
-        self.password_entry = ttk.Entry(left_panel, textvariable=self.password_var, show="•", style='Custom.TEntry', width=25)
-        self.password_entry.grid(row=1, column=1, sticky=(tk.W, tk.E), pady=5, padx=5)
+        self.password_entry = tk.Entry(password_frame, textvariable=self.password_var,
+                                       bg=entry_bg, fg=self.fg_color,
+                                       insertbackground=self.fg_color,
+                                       font=('Helvetica', 10),
+                                       relief='flat', bd=0,
+                                       width=25)
+        self.password_entry.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=(0, 0))
         self.password_entry.bind('<Return>', lambda e: self.start_unliking())
         self.password_entry.bind('<Up>', lambda e: self.username_entry.focus())
         self.password_entry.bind('<Down>', lambda e: self.likes_entry.focus())
         
+        # Password visibility toggle button - small label acting as button
+        self.password_toggle_btn = tk.Label(
+            password_frame,
+            text="👁",
+            cursor='hand2',
+            bg=entry_bg,
+            fg=self.fg_color,
+            font=('Segoe UI Emoji', 11),
+            padx=4,
+            pady=1
+        )
+        self.password_toggle_btn.grid(row=0, column=1, sticky='e')
+        self.password_toggle_btn.bind('<Button-1>', lambda e: self.toggle_fields_visibility())
+        
         # Like removal amount
         ttk.Label(left_panel, text="Likes to Remove:", style='Custom.TLabel').grid(row=2, column=0, sticky=tk.W, pady=5)
         self.likes_var = tk.StringVar(value="30")
-        self.likes_entry = ttk.Entry(left_panel, textvariable=self.likes_var, style='Custom.TEntry', width=25)
+        self.likes_entry = tk.Entry(left_panel, textvariable=self.likes_var,
+                                    bg=entry_bg, fg=self.fg_color,
+                                    insertbackground=self.fg_color,
+                                    font=('Helvetica', 10),
+                                    relief='flat', bd=1,
+                                    width=25)
         self.likes_entry.grid(row=2, column=1, sticky=(tk.W, tk.E), pady=5, padx=5)
         self.likes_entry.bind('<Return>', lambda e: self.start_unliking())
         self.likes_entry.bind('<Up>', lambda e: self.password_entry.focus())
@@ -105,7 +144,13 @@ class InstagramUnlikerGUI:
         # Number of repeats
         ttk.Label(self.repeat_frame, text="Repeats:", style='Custom.TLabel').grid(row=0, column=0, sticky=tk.W, pady=2)
         self.repeats_var = tk.StringVar(value="3")
-        self.repeats_entry = ttk.Entry(self.repeat_frame, textvariable=self.repeats_var, style='Custom.TEntry', width=10)
+        entry_bg = '#2D2D2D' if self.is_dark else '#FAFAFA'
+        self.repeats_entry = tk.Entry(self.repeat_frame, textvariable=self.repeats_var,
+                                      bg=entry_bg, fg=self.fg_color,
+                                      insertbackground=self.fg_color,
+                                      font=('Helvetica', 10),
+                                      relief='flat', bd=1,
+                                      width=10)
         self.repeats_entry.grid(row=0, column=1, sticky=tk.W, pady=2, padx=5)
         self.repeats_entry.bind('<Return>', lambda e: self.start_unliking())
         self.repeats_entry.bind('<Up>', lambda e: self.likes_entry.focus())
@@ -114,7 +159,12 @@ class InstagramUnlikerGUI:
         # Minutes between repeats
         ttk.Label(self.repeat_frame, text="Minutes Between:", style='Custom.TLabel').grid(row=1, column=0, sticky=tk.W, pady=2)
         self.interval_var = tk.StringVar(value="60")
-        self.interval_entry = ttk.Entry(self.repeat_frame, textvariable=self.interval_var, style='Custom.TEntry', width=10)
+        self.interval_entry = tk.Entry(self.repeat_frame, textvariable=self.interval_var,
+                                      bg=entry_bg, fg=self.fg_color,
+                                      insertbackground=self.fg_color,
+                                      font=('Helvetica', 10),
+                                      relief='flat', bd=1,
+                                      width=10)
         self.interval_entry.grid(row=1, column=1, sticky=tk.W, pady=2, padx=5)
         self.interval_entry.bind('<Return>', lambda e: self.start_unliking())
         self.interval_entry.bind('<Up>', lambda e: self.repeats_entry.focus())
@@ -188,6 +238,24 @@ class InstagramUnlikerGUI:
                                      command=self.start_unliking,
                                      style='Instagram.TButton')
         self.start_button.grid(row=5, column=0, columnspan=2, pady=15, sticky=(tk.W, tk.E))
+
+    def toggle_fields_visibility(self):
+        """Toggle visibility for both username and password fields"""
+        self.fields_visible = not self.fields_visible
+        if self.fields_visible:
+            # Show text in both fields
+            self.username_entry.config(show="")
+            self.password_entry.config(show="")
+            # Update icon to open eye
+            self.password_toggle_btn.config(text="👁")
+        else:
+            # Hide text in both fields
+            self.username_entry.config(show="•")
+            self.password_entry.config(show="•")
+            # Update icon to eye with line through it
+            # Using combining long stroke overlay (U+0338) to create eye with slash
+            eye_slash = "👁\u0338"  # Eye with combining long stroke overlay
+            self.password_toggle_btn.config(text=eye_slash)
 
     def toggle_repeat_options(self):
         if self.repeat_var.get():

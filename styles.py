@@ -2,9 +2,38 @@
 from tkinter import ttk
 import os
 import subprocess
+import platform
 
 def detect_dark_theme():
     """Detect if the system is using a dark theme"""
+    # Windows theme detection
+    if platform.system() == 'Windows':
+        try:
+            import winreg
+            key = winreg.OpenKey(
+                winreg.HKEY_CURRENT_USER,
+                r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+            )
+            try:
+                apps_use_light_theme = winreg.QueryValueEx(key, "AppsUseLightTheme")[0]
+                winreg.CloseKey(key)
+                # 0 = dark theme, 1 = light theme
+                return apps_use_light_theme == 0
+            except FileNotFoundError:
+                winreg.CloseKey(key)
+                # Default to light if key doesn't exist
+                return False
+            except Exception:
+                try:
+                    winreg.CloseKey(key)
+                except:
+                    pass
+                return False
+        except Exception:
+            # Fallback for Windows if registry access fails
+            pass
+    
+    # Linux/GNOME theme detection
     try:
         # Try gsettings (GNOME/GTK)
         result = subprocess.run(['gsettings', 'get', 'org.gnome.desktop.interface', 'gtk-theme'],
@@ -32,6 +61,17 @@ def detect_dark_theme():
 
 def setup_styles(is_dark=False):
     style = ttk.Style()
+    
+    # On Windows, try to use a theme that supports better styling
+    if platform.system() == 'Windows':
+        try:
+            # Try to set a theme that supports customization
+            style.theme_use('vista')  # Vista theme works better on Windows
+        except:
+            try:
+                style.theme_use('winnative')
+            except:
+                pass
     
     # Color scheme based on theme
     if is_dark:
@@ -70,7 +110,16 @@ def setup_styles(is_dark=False):
                    relief='flat',
                    fieldbackground=entry_bg,
                    foreground=fg_color,
-                   borderwidth=1)
+                   borderwidth=1,
+                   insertcolor=fg_color)  # Cursor color matches text
+    
+    # Map entry styles for better Windows compatibility
+    style.map('Custom.TEntry',
+             fieldbackground=[('readonly', entry_bg), ('!disabled', entry_bg)],
+             foreground=[('readonly', fg_color), ('!disabled', fg_color)],
+             bordercolor=[('focus', border_color if is_dark else '#0078D4')],
+             lightcolor=[('focus', border_color if is_dark else '#E0E0E0')],
+             darkcolor=[('focus', border_color if is_dark else '#E0E0E0')])
     
     # Configure Instagram-themed button style
     style.configure('Instagram.TButton',
