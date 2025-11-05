@@ -5,12 +5,12 @@ class CylindricalGradientProgressBar(tk.Canvas):
     def __init__(self, master=None, width=600, height=20, bg_color='#FFFFFF', **kwargs):
         # Determine background color for progress bar based on theme
         if bg_color == '#1E1E1E':
-            # Dark theme
-            canvas_bg = '#2D2D2D'
+            # Dark theme - Canvas should match the app background
+            canvas_bg = bg_color  # Use the same bg_color instead of '#2D2D2D'
             progress_bg = '#404040'
         else:
             # Light theme
-            canvas_bg = '#FFFFFF'
+            canvas_bg = bg_color  # Use the same bg_color
             progress_bg = '#F0F0F0'
         
         super().__init__(master, width=width, height=height, bg=canvas_bg, highlightthickness=0, **kwargs)
@@ -25,13 +25,13 @@ class CylindricalGradientProgressBar(tk.Canvas):
     
     def _draw_cylindrical_progress(self):
         self.delete("all")
+        
+        # Draw a subtle background track for the entire width
+        self.create_rounded_rectangle(0, 0, self.width, self.height, radius=self.radius, fill=self.progress_bg, outline='')
+        
+        # Calculate and draw the actual progress
         progress_width = int((self.progress / 100) * self.width)
-        # Only draw the background if there's actual progress to show
-        # When progress is 0, leave it empty (invisible)
         if progress_width > 0:
-            # Draw background first
-            self.create_rounded_rectangle(0, 0, self.width, self.height, radius=self.radius, fill=self.progress_bg, outline='')
-            # Then draw the progress
             self._draw_gradient_progress(0, 0, progress_width, self.height, self.radius)
 
     def _draw_gradient_progress(self, x1, y1, x2, y2, radius):
